@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MBB · Estúdio de Comunicação</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232563EB'/%3E%3Ctext x='16' y='23' font-family='Poppins,Arial' font-size='20' font-weight='700' fill='white' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ---- MBB · design tokens ---- */
+  --brand:#2563EB; --brand-strong:#1D4FD7; --brand-soft:#DCE7FE; --brand-2:#3B82F6;
+  --ink:#0D1B2A; --surface-dark:#1F2937;
+  --bg:#F5F7FA; --card:#FFFFFF;
+  --text:#0F1E30; --muted:#64748B; --line:#E2E8F0;
+  --accent:#00BFA6; --accent-soft:#D2F4EF;
+  --success:#00BFA6; --success-soft:#D2F4EF;
+  --warn:#F59E0B; --warn-soft:#FDECC8;
+  --danger:#EF4444; --danger-soft:#FBDDDD;
+  --r-4:4px; --r-8:8px; --r-12:12px; --r-16:16px; --r-24:24px;
+  --s-4:4px; --s-8:8px; --s-16:16px; --s-24:24px; --s-32:32px; --s-48:48px;
+  --shadow-s:0 1px 2px rgba(0,0,0,.05);
+  --shadow-m:0 4px 12px rgba(0,0,0,.08);
+  --shadow-l:0 12px 24px rgba(0,0,0,.12);
+  --font-h:'Poppins',system-ui,-apple-system,sans-serif;
+  --font-b:'Poppins',system-ui,-apple-system,sans-serif;
+  /* ---- compat aliases (mantêm regras/estilos inline existentes) ---- */
+  --ink-2:var(--surface-dark); --paper:var(--bg);
+  --amber:var(--brand); --amber-soft:var(--brand-soft);
+  --blue:var(--brand-2); --blue-soft:var(--brand-soft);
+  --good:var(--accent); --bad:var(--danger);
+  --radius:var(--r-16); --radius-s:var(--r-8);
+  --shadow:var(--shadow-m);
+  --font-d:var(--font-h); --font-m:var(--font-b);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--text);font-family:var(--font-b);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-d);font-weight:500;line-height:1.15;margin:0 0 .4em}
+h1{font-size:1.9rem}h2{font-size:1.5rem}h3{font-size:1.18rem}h4{font-size:1rem;font-weight:600}
+p{margin:0 0 .8em}
+a{color:var(--blue)}
+button{font-family:var(--font-b);cursor:pointer}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--font-m)}
+.muted{color:var(--muted)}
+.small{font-size:.83rem}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:var(--ink);color:#DDE6DC;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{padding:22px 22px 14px}
+.brand .kicker{font-family:var(--font-m);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.brand h1{color:#F3F6EF;font-size:1.32rem;margin:.15em 0 0}
+.brand .wave{margin-top:12px;opacity:.9}
+.nav{padding:8px 12px 20px;display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;color:#C6D2C7;padding:10px 12px;border-radius:var(--radius-s);font-size:.92rem;transition:background .15s,color .15s}
+.nav button .ic{width:18px;text-align:center;opacity:.85}
+.nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav button.active{background:var(--amber);color:#2a1c05;font-weight:600}
+.nav .sep{margin:10px 12px 6px;font-family:var(--font-m);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:#7d9084}
+.side-foot{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:.74rem;color:#8ba193}
+
+.main{padding:34px 40px 80px;max-width:1000px}
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.eyebrow{font-family:var(--font-m);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.lead{font-size:1.02rem;color:var(--muted);max-width:62ch}
+
+/* ---------- Cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.stat .n{font-family:var(--font-m);font-size:1.9rem;color:var(--ink);line-height:1}
+.stat .l{font-size:.8rem;color:var(--muted);margin-top:6px}
+.bar{height:9px;background:#e4e9df;border-radius:99px;overflow:hidden;margin-top:10px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--amber));border-radius:99px;transition:width .5s}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:9px 15px;border-radius:var(--radius-s);font-size:.9rem;font-weight:500}
+.btn:hover{background:var(--ink-2)}
+.btn.amber{background:var(--amber);border-color:var(--amber);color:#2a1c05}
+.btn.amber:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:rgba(20,48,43,.06)}
+.btn.rec{background:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:6px 11px;font-size:.82rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Chips ---------- */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 13px;font-size:.82rem;color:var(--muted)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tag{display:inline-block;font-family:var(--font-m);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--blue-soft);color:#26555a}
+.tag.lvl1{background:#e2efe4;color:#2c5c3f}
+.tag.lvl2{background:var(--amber-soft);color:#7a5210}
+.tag.lvl3{background:#f0dcd6;color:#8a3b2a}
+
+/* ---------- Forms ---------- */
+label{display:block;font-size:.82rem;font-weight:600;margin:12px 0 5px;color:var(--ink)}
+input[type=text],input[type=number],input[type=password],textarea,select{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-s);
+  font-family:var(--font-b);font-size:.92rem;background:#fff;color:var(--text)}
+textarea{min-height:70px;resize:vertical}
+.out{background:#fff;border:1px dashed var(--line);border-radius:var(--radius-s);padding:14px;white-space:pre-wrap;font-size:.9rem;margin-top:12px}
+
+/* ---------- Accordion ---------- */
+.acc{border:1px solid var(--line);border-radius:var(--radius-s);margin-bottom:10px;background:#fff;overflow:hidden}
+.acc>summary{padding:13px 16px;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary:after{content:"+";font-family:var(--font-m);color:var(--amber);font-size:1.1rem}
+.acc[open]>summary:after{content:"–"}
+.acc .body{padding:2px 16px 16px}
+
+/* ---------- Table ---------- */
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--font-m);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- Recorder / waveform ---------- */
+.studio{background:var(--ink);color:#e8efe6;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.studio h3{color:#fff}
+.meter{height:64px;display:flex;align-items:center;gap:3px;margin:14px 0;padding:0 4px}
+.meter .b{flex:1;background:var(--blue);border-radius:3px;height:6%;transition:height .06s linear}
+.meter.live .b{background:var(--amber)}
+.rec-time{font-family:var(--font-m);font-size:1.5rem;color:var(--amber)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--bad);display:inline-block;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.35}}
+video,audio{width:100%;border-radius:var(--radius-s);margin-top:12px;background:#000}
+
+/* rubric slider */
+.rub{display:grid;grid-template-columns:1fr 150px 34px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.rub input[type=range]{width:100%}
+.rub .v{font-family:var(--font-m);text-align:center;font-size:1rem}
+
+.notice{border-left:3px solid var(--amber);background:#fff;padding:12px 16px;border-radius:8px;font-size:.9rem;margin:12px 0}
+.notice.warn{border-color:var(--bad)}
+.pill{font-family:var(--font-m);font-size:.7rem;padding:2px 8px;border-radius:99px;background:#e4e9df;color:var(--muted)}
+.pill.ok{background:#dceee1;color:var(--good)}
+
+/* breathing */
+.breath{width:150px;height:150px;border-radius:50%;margin:18px auto;background:radial-gradient(circle,var(--amber-soft),var(--amber));display:flex;align-items:center;justify-content:center;font-family:var(--font-m);color:#3a2a08;transition:transform 1s ease,background 1s}
+.breath.big{transform:scale(1.5)}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:.88rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s;z-index:99}
+.toast.show{opacity:1}
+
+.menu-toggle{display:none}
+@media(max-width:820px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;z-index:50;width:250px;left:-260px;transition:left .25s}
+  .sidebar.open{left:0}
+  .main{padding:70px 20px 60px}
+  .menu-toggle{display:inline-flex;position:fixed;top:14px;left:14px;z-index:60}
+}
+</style>
+<style>
+/* =====================================================
+   MBB · camada de marca (sobrepõe o tema base)
+   ===================================================== */
+h1,h2,h3,h4{font-family:var(--font-h);letter-spacing:-.01em}
+h1{font-weight:600}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:0}
+.eyebrow{color:var(--brand);font-weight:600}
+a{color:var(--brand)}
+
+/* ---- lockup da marca ---- */
+.brand{padding:22px 20px 16px}
+.logo{display:flex;align-items:center;gap:11px}
+.logo svg{flex:none}
+.wordmark{font-family:var(--font-h);font-weight:700;font-size:1.5rem;color:#fff;line-height:1;letter-spacing:.02em}
+.tagline{font-size:.62rem;color:#8aa0b6;letter-spacing:.04em;margin-top:3px}
+.product{font-family:var(--font-h);font-weight:500;color:#dbe6f2;margin-top:15px;font-size:1rem}
+.brand .kicker{font-family:var(--font-b);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-2);margin-top:3px}
+
+/* ---- navegação ---- */
+.nav button{color:#a7b6c6}
+.nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav button.active{background:var(--brand);color:#fff;font-weight:600}
+.nav .sep{color:#5b7185}
+.side-foot{color:#7f95a9;border-top-color:rgba(255,255,255,.08)}
+
+/* ---- botões: Primário / Secundário / Terciário ---- */
+.btn{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:var(--shadow-s);border-radius:var(--r-8)}
+.btn:hover{background:var(--brand-strong);border-color:var(--brand-strong)}
+.btn.amber{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.amber:hover{background:var(--brand-strong)}
+.btn.secondary{background:transparent;border-color:var(--brand);color:var(--brand);box-shadow:none}
+.btn.secondary:hover{background:var(--brand-soft)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--text);box-shadow:none}
+.btn.ghost:hover{background:#eef2f7}
+.btn.rec{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.rec:hover{filter:brightness(1.05)}
+
+/* ---- cards, stats, progresso ---- */
+.card{background:var(--card);border-color:var(--line);border-radius:var(--r-16);box-shadow:var(--shadow-s)}
+.stat{border-color:var(--line);border-radius:var(--r-12);box-shadow:var(--shadow-s)}
+.stat .n{color:var(--brand)}
+.bar{background:#e7edf4}
+.bar>span{background:linear-gradient(90deg,var(--brand),var(--accent))}
+
+/* ---- chips ---- */
+.chip{border-color:var(--line)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* ---- inputs ---- */
+input[type=text],input[type=number],input[type=password],input[type=time],textarea,select{border-color:var(--line);border-radius:var(--r-8)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+
+/* ---- estúdio (superfície escura) + medidor ---- */
+.studio{background:var(--ink);border-radius:var(--r-16);box-shadow:var(--shadow-m)}
+.meter .b{background:var(--brand-2)}
+.meter.live .b{background:var(--accent)}
+.rec-time{color:var(--accent)}
+
+/* ---- respiração ---- */
+.breath{background:radial-gradient(circle,var(--accent-soft),var(--accent));color:#043b35}
+
+/* ---- badges / tags (Sucesso, Em andamento, Atenção, Erro) ---- */
+.tag{background:var(--brand-soft);color:#1e40af;border-radius:var(--r-4)}
+.tag.lvl1{background:var(--success-soft);color:#046a5c}
+.tag.lvl2{background:var(--brand-soft);color:#1e40af}
+.tag.lvl3{background:var(--warn-soft);color:#8a5a05}
+.pill{background:#eef2f7;color:var(--muted)}
+.pill.ok{background:var(--success-soft);color:#046a5c}
+
+/* ---- alertas ---- */
+.notice{border-left:4px solid var(--brand);background:var(--brand-soft);color:#173154;border-radius:var(--r-8)}
+.notice.warn{border-left-color:var(--warn);background:var(--warn-soft);color:#5c3d05}
+
+/* ---- foco acessível na cor da marca ---- */
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+</style>
+</head>
+<body>
+<button class="btn amber sm menu-toggle" onclick="document.getElementById('sb').classList.toggle('open')">☰ Menu</button>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
+          <defs><linearGradient id="mbbM" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3B82F6"/><stop offset="1" stop-color="#1D4FD7"/>
+          </linearGradient></defs>
+          <polygon points="16,86 16,24 34,36 34,86" fill="url(#mbbM)"/>
+          <polygon points="84,86 84,24 66,36 66,86" fill="url(#mbbM)"/>
+          <polygon points="34,36 50,50 66,36 66,60 50,74 34,60" fill="url(#mbbM)" opacity=".9"/>
+        </svg>
+        <div><div class="wordmark">MBB</div><div class="tagline">Automação &amp; Inteligência</div></div>
+      </div>
+      <div class="product">Estúdio de Comunicação</div>
+      <div class="kicker">Trilha · 12 semanas</div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      Seus dados ficam salvos neste navegador.<br>Faça backup em <b>Configurações → Exportar</b>.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <section class="view active" id="v-painel"></section>
+    <section class="view" id="v-plano"></section>
+    <section class="view" id="v-modulos"></section>
+    <section class="view" id="v-estudio"></section>
+    <section class="view" id="v-biblioteca"></section>
+    <section class="view" id="v-templates"></section>
+    <section class="view" id="v-avaliacoes"></section>
+    <section class="view" id="v-diario"></section>
+    <section class="view" id="v-registros"></section>
+    <section class="view" id="v-lembretes"></section>
+    <section class="view" id="v-config"></section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+/* ============================================================
+   ESTÚDIO DE COMUNICAÇÃO — app de treino (arquivo único)
+   Persistência: window.storage (Claude) → localStorage (local) → memória
+   ============================================================ */
+
+/* ---------- Storage layer ---------- */
+const _mem = {};
+const Store = {
+  async get(k){
+    try{ if(window.storage){ const r = await window.storage.get(k); return r ? JSON.parse(r.value) : null; } }catch(e){}
+    try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){}
+    return (k in _mem) ? _mem[k] : null;
+  },
+  async set(k,val){
+    const s = JSON.stringify(val);
+    try{ if(window.storage){ await window.storage.set(k,s); } }catch(e){}
+    try{ localStorage.setItem(k,s); }catch(e){}
+    _mem[k]=val;
+  }
+};
+const KEY='cpp-state-v1';
+let S = { week:1, done:{}, diary:[], assess:[], records:[], templates:[], settings:{driveClientId:''},
+  reminders:{ enabled:false, recTime:'09:00', recDays:'all', writeEnabled:true, writeTime:'14:00', fired:{} } };
+let saveTimer=null;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>Store.set(KEY,S),250); }
+async function load(){ const d = await Store.get(KEY); if(d) S = Object.assign(S,d); }
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+function toast(m){const t=$('#toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200);}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function copy(txt){navigator.clipboard.writeText(txt).then(()=>toast('Copiado')).catch(()=>toast('Não foi possível copiar'));}
+function today(){return new Date().toISOString().slice(0,10);}
+function pad(n){return String(n).padStart(2,'0');}
+function localToday(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function fmtDate(d){return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});}
+
+/* ============================================================
+   DADOS
+   ============================================================ */
+const NAV = [
+  ['painel','◐','Painel'],
+  ['plano','▤','Plano 12 semanas'],
+  ['modulos','▦','Módulos'],
+  ['SEP1','Prática'],
+  ['estudio','●','Estúdio de prática'],
+  ['biblioteca','⚑','Biblioteca de exercícios'],
+  ['templates','▣','Templates'],
+  ['SEP2','Acompanhamento'],
+  ['avaliacoes','★','Avaliações & rubricas'],
+  ['diario','✎','Diário de bordo'],
+  ['registros','◉','Meus registros'],
+  ['lembretes','◔','Lembretes'],
+  ['SEP3','Sistema'],
+  ['config','⚙','Configurações'],
+];
+
+const PLANO = [
+  [1,'Diagnóstico + M1','Diagnóstico; respiração; dicção; saúde vocal','Linha de base; controle da voz','Questionário; gravação diagnóstica; respiração e dicção diárias','Áudio diagnóstico + leitura em voz alta','5–6 h'],
+  [2,'M1','Tom, modulação, ritmo, pausas, projeção; postura, gestos, olhar','Modular a voz; alinhar corpo e mensagem','Leitura modulada; vídeo de 2 min; análise de postura','Vídeo de 2 min "quem sou eu"','5–6 h'],
+  [3,'M2','Pirâmide de Minto; PREP; STAR; problema–causa–solução','Estruturar respostas em segundos','Exercícios PREP e STAR; reescrever mensagens confusas','5 respostas PREP + 3 STAR gravadas','4–5 h'],
+  [4,'M2','Storytelling; narrativa de dados; aberturas; tensão e resolução','Transformar dados em história','Converter um dado em narrativa; abertura forte','Micro-história de dados (90 s)','5–6 h'],
+  [5,'M3','Escuta ativa; perguntas; parafraseamento; CNV','Ouvir para compreender; separar fato de julgamento','Prática de escuta; reescrever julgamentos','Diálogo de escuta + 5 frases em CNV','4–5 h'],
+  [6,'M3','Assertividade; limites; empatia; conversas difíceis','Posicionar-se com respeito','Simulação de conversa difícil; avaliação intermediária','Simulação gravada + autoavaliação','5–6 h'],
+  [7,'M4','Facilitação de reuniões; pauta, papéis, decisões; mudanças','Conduzir reunião eficaz','Montar agenda + ata','Agenda + ata modelo','4–5 h'],
+  [8,'M4','Feedback (SBI); conflito; negociação; influência ética','Dar feedback e negociar sem manipular','Simular feedback e negociação','2 feedbacks SBI + 1 negociação','5–6 h'],
+  [9,'M5','Ansiedade; preparação; estrutura; design de slides','Preparar e estruturar apresentação','Roteiro + 5 slides minimalistas','Roteiro + deck de 5 slides','5–6 h'],
+  [10,'M5','Ensaio; autoanálise; Q&A; objeções; formatos','Apresentar e responder sob pressão','Ensaio gravado; Q&A hostil','Apresentação 5–7 min + Q&A','5–6 h'],
+  [11,'M6','Redação; e-mails, atas, resumos; assíncrono; reuniões virtuais','Escrever claro; brilhar no remoto','Reescrever e-mails; clipe com boa imagem/áudio','3 e-mails + resumo + clipe remoto','4–5 h'],
+  [12,'Projeto','Integração de tudo','Demonstrar domínio ponta a ponta','Projeto final: apresentação 8–12 min + slides + Q&A + resumo','Projeto final + plano de 90 dias','6–8 h'],
+];
+
+const MODULOS = {
+  m1:{n:'Módulo 1 — Expressão Vocal e Corporal',lvl:1,ready:true},
+  m2:{n:'Módulo 2 — Estrutura e Storytelling',lvl:1,ready:false,
+      out:['Pirâmide de Minto','PREP','STAR','Problema–causa–solução','O quê / por quê / e agora','Síntese e priorização','Storytelling corporativo','Narrativa de dados','Aberturas fortes','Tensão, contraste e resolução','Uso ético de histórias']},
+  m3:{n:'Módulo 3 — Interpessoal e Relacional',lvl:2,ready:false,
+      out:['Escuta ativa','Tipos de perguntas','Parafraseamento e validação','Comunicação Não Violenta','Assertividade','Empatia','Leitura de stakeholders','Adaptação de linguagem','Conversas difíceis','Comunicação intercultural']},
+  m4:{n:'Módulo 4 — Estratégia e Liderança',lvl:2,ready:false,
+      out:['Facilitação de reuniões','Pauta, papéis, decisões','Comunicação de mudanças','Feedback (SBI e outros)','Gestão de conflitos','Negociação','Persuasão e influência ética','Defesa de ideias','Comunicação sob pressão']},
+  m5:{n:'Módulo 5 — Apresentações de Alto Impacto',lvl:3,ready:false,
+      out:['Gestão da ansiedade','Preparação mental e física','Estrutura da apresentação','Design de slides','Uso de dados e evidências','Ensaio e autoanálise','Q&A e perguntas difíceis','Objeções','Presencial, híbrido e virtual']},
+  m6:{n:'Módulo 6 — Escrita e Digital',lvl:2,ready:false,
+      out:['Redação empresarial','E-mails, relatórios, atas','Resumos e mensagens executivas','Comunicação assíncrona','Slack / Teams','Reunião virtual: câmera, luz, áudio','Etiqueta digital','Escolha de canal']},
+};
+
+// Conteúdo completo do Módulo 1
+const M1 = `
+<div class="eyebrow">Módulo 1 · Nível iniciante · Semanas 1–2</div>
+<h2>Fundamentos da Expressão Vocal e Corporal</h2>
+<p class="lead">A infraestrutura de tudo o que vem depois: se a voz não é clara e a presença contradiz a fala, nenhum framework salva a mensagem.</p>
+
+<div class="card"><h3>Objetivos de aprendizagem</h3><ol>
+<li>Usar a <b>respiração diafragmática</b> como base da fala.</li>
+<li>Articular com <b>dicção clara</b>, sem "comer" palavras.</li>
+<li><b>Modular</b> tom, ritmo, volume e pausas com intenção.</li>
+<li>Reduzir <b>vícios de linguagem</b>, trocando-os por pausas.</li>
+<li>Adotar <b>postura aberta</b> e <b>gestos coerentes</b>.</li>
+<li>Manter <b>contato visual</b> funcional (presencial e vídeo).</li>
+<li>Cuidar da <b>saúde vocal</b>.</li>
+<li>Ler sinais não verbais <b>com cautela</b>, sem conclusões precipitadas.</li>
+</ol></div>
+
+<div class="card"><h3>Conceitos essenciais</h3>
+<details class="acc"><summary>Respiração diafragmática</summary><div class="body"><p>Respirar movendo o <b>diafragma</b> (músculo abaixo dos pulmões), expandindo o abdômen — não só o peito. Dá fôlego e apoio à voz, reduz tensão na garganta e a expiração longa acalma a ansiedade.</p></div></details>
+<details class="acc"><summary>Dicção e articulação</summary><div class="body"><p><b>Dicção</b> é a clareza dos sons; <b>articulação</b> é o movimento de lábios, língua e mandíbula que os produz. Dicção é resultado; articulação é mecanismo — e mecanismo se treina.</p></div></details>
+<details class="acc"><summary>Tom, modulação e monotonia</summary><div class="body"><p><b>Tom</b> é a altura da voz; <b>modular</b> é variá-lo de propósito para dar sentido. O oposto, <b>monotonia</b>, derruba a atenção. "Nós <i>não</i> vamos cortar o orçamento" muda de sentido conforme a ênfase.</p></div></details>
+<details class="acc"><summary>Ritmo, velocidade e pausa</summary><div class="body"><p>Fala confortável em português gira em torno de <b>130–160 palavras/min</b> (referência, não regra). A <b>pausa</b> é a ferramenta mais subestimada: dá ênfase, respiro e elimina muletas.</p></div></details>
+<details class="acc"><summary>Projeção e volume</summary><div class="body"><p><b>Projeção</b> é a voz "chegar ao fundo da sala" com apoio respiratório — não é gritar (isso machuca as pregas vocais). Volume adequa-se ao ambiente.</p></div></details>
+<details class="acc"><summary>Comunicação não verbal & coerência</summary><div class="body"><p>Tudo que comunica além das palavras: postura, gestos, rosto, olhar, espaço — e a própria voz. <b>Coerência</b> é o alinhamento entre o que se diz, como soa e o que o corpo mostra. <span class="pill">mito</span> "93% é não verbal" (Mehrabian) é citação equivocada: vale só para mensagens emocionais ambíguas.</p></div></details>
+</div>
+
+<div class="card"><h3>Técnicas do módulo</h3><ul>
+<li><b>Aquecimento em 5 min:</b> respiração → sirene → trava-línguas → leitura projetada.</li>
+<li><b>Pausa-substituta:</b> ao sentir vir um "éee", feche a boca e conte 1.</li>
+<li><b>Ponto final falado:</b> ao terminar a ideia, baixe o tom e pare.</li>
+<li><b>Marcação de texto:</b> antes de ler, marque <b>/ //</b> (pausas) e sublinhe as palavras a enfatizar.</li>
+<li><b>3 pontos de apoio:</b> pés firmes, tronco ereto, ombros soltos.</li>
+</ul>
+<p class="small muted">Pratique cada uma no <b>Estúdio de prática</b>: há timer de respiração, treinador de pausa, contador de palavras/min e caça-vícios.</p></div>
+
+<div class="card"><h3>Erros comuns → correção</h3>
+<table><tr><th>Erro</th><th>Correção</th></tr>
+<tr><td>Fica sem ar na frase</td><td>Respiração diafragmática; planejar onde respirar</td></tr>
+<tr><td>Fala rápido demais</td><td>Pausas deliberadas; medir palavras/min</td></tr>
+<tr><td>Monotonia</td><td>Marcar palavras-chave; ler com 3 intenções</td></tr>
+<tr><td>Muletas (né/tipo/éee)</td><td>Pausa-substituta; contar muletas/min</td></tr>
+<tr><td>Grita para projetar</td><td>Projetar com apoio, não com a garganta</td></tr>
+<tr><td>Postura fechada no vídeo</td><td>Câmera na altura dos olhos; olhar na lente</td></tr>
+</table></div>
+
+<div class="card"><h3>Checklist</h3>
+<p><b>Antes de falar (30 s):</b> respirar fundo 2–3× · 3 pontos de apoio · olhar na lente · primeira frase pensada.</p>
+<p><b>Durante:</b> pausa em vez de "éee" · variar tom nas palavras-chave · ritmo controlado · gestos coerentes.</p>
+<p><b>Saúde vocal (diário):</b> hidratação · aquecimento antes de falas longas · sem forçar. Rouquidão &gt; 2 semanas → fonoaudiólogo/otorrino.</p></div>
+
+<div class="notice warn"><b>Limitações científicas (leia com atenção).</b>
+<ul style="margin:.5em 0 0">
+<li><b>Não existe "detector de mentira" corporal.</b> Julgar mentira por gestos/olhar acerta pouco acima do acaso.</li>
+<li><b>"Power posing" é controverso:</b> o estudo original não se replicou; sobra um efeito subjetivo modesto de sentir-se mais confiante.</li>
+<li>Trate sinais como <b>hipóteses</b>, leia o <b>conjunto</b> e o <b>contexto</b>, e verifique com palavras. Cultura e neurodivergência mudam gestos e olhar.</li>
+</ul></div>
+
+<div class="card"><h3>Critérios de domínio</h3><ul>
+<li>Média ≥ 3,5 na rubrica do Módulo 1, sem nenhum critério em 1.</li>
+<li>≤ 1 vício/min em improviso de 2 min.</li>
+<li>Expiração falada sustentada ≥ 10 s.</li>
+<li>Consegue apontar, ao rever a gravação, 2 acertos e 2 pontos a melhorar.</li>
+</ul>
+<p class="small muted">Referências essenciais: Behlau (voz, PT) · Polito (oratória, PT) · Julian Treasure, "How to speak…" (TED, legendas PT). Detalhes e ressalvas no material completo (arquivo .md).</p></div>
+`;
+
+// Biblioteca de exercícios (M1). skill/level para filtro.
+const EXS = [
+  {id:'E1',t:'Respiração diafragmática',skill:'Voz',lvl:1,dur:'5–10 min',freq:'Diária',
+   steps:['Sente/deite ereto, mão no abdômen','Inspire pelo nariz 4 s (abdômen sobe, peito quase parado)','Segure 2 s','Solte pela boca 6–8 s com "sss" contínuo','Repita 8–10×'],
+   obj:'Aprender o apoio respiratório.',aval:'"sss" estável ≥ 8 s.',prog:'Aumente a expiração até 12–15 s; depois fale uma frase inteira nela.'},
+  {id:'E2',t:'Dicção com trava-línguas',skill:'Voz',lvl:1,dur:'5 min',freq:'Diária',
+   steps:['Escolha 2–3 trava-línguas','Diga devagar exagerando os articuladores 3×','Acelere mantendo a clareza'],
+   obj:'Precisão articulatória.',aval:'Acelerar sem "comer" sílabas.',prog:'Trava-línguas mais longos; falar com lápis entre os dentes e depois sem.'},
+  {id:'E3',t:'Leitura em voz alta gravada',skill:'Voz',lvl:1,dur:'10 min',freq:'4×/semana',
+   steps:['Leia ~200 palavras gravando','Ouça e marque onde travou/engoliu/correu','Releia corrigindo'],
+   obj:'Transferir dicção e ritmo para texto real.',aval:'Rubrica de dicção/ritmo.',prog:'Textos com números e termos difíceis; depois ler para alguém.'},
+  {id:'E4',t:'Modulação e pausas (leitura marcada)',skill:'Voz',lvl:1,dur:'10 min',freq:'3×/semana',
+   steps:['Marque / // e sublinhe 5–8 palavras-chave','Leia gravando respeitando as marcas','Leia o mesmo trecho com 3 intenções'],
+   obj:'Sair da monotonia.',aval:'Dá para ouvir pausas e ênfase.',prog:'Improvisar 1 min aplicando pausa-substituta.'},
+  {id:'E5',t:'Caça-vícios',skill:'Voz',lvl:1,dur:'5 min + o dia',freq:'Diária',
+   steps:['Grave 2 min de improviso','Conte muletas/min','Aplique a pausa-substituta nas conversas do dia'],
+   obj:'Reduzir muletas.',aval:'Muletas/min caindo semana a semana.',prog:'Falar sob perguntas rápidas mantendo o número baixo.'},
+  {id:'E6',t:'Postura, gestos e olhar (vídeo)',skill:'Corpo',lvl:2,dur:'15 min',freq:'2×/semana',
+   steps:['Grave 2 min respondendo a uma pergunta','Assista sem som (só corpo)','Assista só com som','Avalie postura, gestos, olhar, coerência'],
+   obj:'Presença coerente.',aval:'Rubrica de postura/gestos/olhar.',prog:'Apresentar de pé; depois com slides ao lado.'},
+  {id:'S1',t:'Abertura em 30 segundos',skill:'Corpo',lvl:2,dur:'10 min',freq:'2×/semana',
+   steps:['Grave uma abertura de reunião de 30 s','Comece com pausa + frase-conclusão','Sem muleta na primeira frase'],
+   obj:'Começar com presença.',aval:'Clareza, pausa inicial, zero muleta no início.',prog:'Abertura de apresentação de 60 s com gancho.'},
+  {id:'S2',t:'Fala com áudio "ruim"',skill:'Voz',lvl:2,dur:'8 min',freq:'1×/semana',
+   steps:['Grave 1 min simulando call instável','Desacelere o ritmo','Reforce a dicção para compensar o canal'],
+   obj:'Inteligibilidade sob restrição.',aval:'Compreensível apesar do canal.',prog:'Adicionar termos técnicos e números.'},
+];
+
+// Templates
+const TEMPLATES = [
+  {id:'prep',t:'PREP — resposta estruturada',ready:true,fields:[
+     ['point','Ponto (sua conclusão em 1 frase)','textarea'],
+     ['reason','Razão (por quê)','textarea'],
+     ['example','Exemplo (evidência/caso)','textarea'],
+     ['point2','Ponto (reforço da conclusão)','textarea']],
+   build:v=>`PONTO: ${v.point}\n\nPORQUE: ${v.reason}\n\nEXEMPLO: ${v.example}\n\nPORTANTO: ${v.point2}`},
+  {id:'star',t:'STAR — situação, tarefa, ação, resultado',ready:true,fields:[
+     ['s','Situação (contexto)','textarea'],
+     ['t','Tarefa (seu objetivo)','textarea'],
+     ['a','Ação (o que você fez)','textarea'],
+     ['r','Resultado (impacto, de preferência com número)','textarea']],
+   build:v=>`SITUAÇÃO: ${v.s}\n\nTAREFA: ${v.t}\n\nAÇÃO: ${v.a}\n\nRESULTADO: ${v.r}`},
+  {id:'minto',t:'Pirâmide de Minto — do topo para a base',ready:true,fields:[
+     ['answer','Resposta/recomendação (o topo — diga primeiro)','textarea'],
+     ['a1','Argumento de apoio 1','text'],
+     ['a2','Argumento de apoio 2','text'],
+     ['a3','Argumento de apoio 3','text'],
+     ['evid','Evidências/dados que sustentam','textarea']],
+   build:v=>`RECOMENDAÇÃO: ${v.answer}\n\nPorque:\n  1. ${v.a1}\n  2. ${v.a2}\n  3. ${v.a3}\n\nEvidências: ${v.evid}`},
+  {id:'pitch',t:'Elevator pitch',ready:true,fields:[
+     ['who','Quem você é / o que faz','text'],
+     ['for','Para quem / que problema resolve','textarea'],
+     ['how','Como (diferencial em 1 frase)','textarea'],
+     ['ask','Pedido/próximo passo','text']],
+   build:v=>`${v.who}. Ajudo ${v.for} — ${v.how}. ${v.ask}`},
+  {id:'sbi',t:'Feedback SBI — situação, comportamento, impacto',ready:true,fields:[
+     ['s','Situação (quando/onde, específico)','textarea'],
+     ['b','Comportamento (fato observável, sem julgamento)','textarea'],
+     ['i','Impacto (efeito sobre você/time/resultado)','textarea'],
+     ['next','Pedido ou pergunta de abertura','textarea']],
+   build:v=>`Quando ${v.s},\nvocê ${v.b}.\nO impacto foi: ${v.i}\n\n${v.next}`},
+  {id:'cnv',t:'Comunicação Não Violenta',ready:true,fields:[
+     ['obs','Observação (fato, sem avaliação)','textarea'],
+     ['sen','Sentimento (como você se sente)','textarea'],
+     ['nec','Necessidade (o que você precisa)','textarea'],
+     ['ped','Pedido (concreto, realizável)','textarea']],
+   build:v=>`Quando ${v.obs},\neu me sinto ${v.sen},\nporque preciso de ${v.nec}.\nVocê poderia ${v.ped}?`},
+  {id:'email',t:'E-mail executivo',ready:true,fields:[
+     ['assunto','Assunto (específico e acionável)','text'],
+     ['bl','Bottom line (a conclusão, na 1ª linha)','textarea'],
+     ['ctx','Contexto essencial (2–3 frases)','textarea'],
+     ['acao','O que você precisa / próximos passos','textarea'],
+     ['prazo','Prazo','text']],
+   build:v=>`Assunto: ${v.assunto}\n\nResumo: ${v.bl}\n\nContexto: ${v.ctx}\n\nPeço: ${v.acao}\nPrazo: ${v.prazo}`},
+  {id:'resumo',t:'Resumo executivo',ready:true,fields:[
+     ['rec','Recomendação/decisão pedida','textarea'],
+     ['prob','Problema/oportunidade','textarea'],
+     ['opts','Opções consideradas','textarea'],
+     ['impacto','Impacto esperado (números)','textarea'],
+     ['risco','Riscos e mitigação','textarea'],
+     ['ask','Decisão/pedido ao leitor','textarea']],
+   build:v=>`RECOMENDAÇÃO: ${v.rec}\n\nCONTEXTO: ${v.prob}\n\nOPÇÕES: ${v.opts}\n\nIMPACTO: ${v.impacto}\n\nRISCOS: ${v.risco}\n\nDECISÃO PEDIDA: ${v.ask}`},
+];
+const TEMPLATE_SOON = ['Storytelling de dados','Roteiro de apresentação','Agenda de reunião','Ata','Plano de comunicação','Roteiro de conversa difícil','Mensagem assíncrona','Preparação para Q&A','Autoavaliação de apresentação'];
+
+// Rubricas
+const RUBRICS = {
+  diag:{name:'Diagnóstico inicial',crit:['Dicção','Ritmo','Modulação','Vícios de linguagem','Postura e gestos','Contato visual','Clareza/estrutura','Síntese','Escrita — clareza','Escrita — tom']},
+  m1:{name:'Módulo 1 — Voz e corpo',crit:['Dicção','Ritmo','Modulação','Vícios/min','Postura','Gestos','Contato visual','Coerência']},
+};
+
+/* ============================================================
+   RENDER — navegação
+   ============================================================ */
+function buildNav(){
+  const nav=$('#nav'); nav.innerHTML='';
+  NAV.forEach(item=>{
+    if(item[0].startsWith('SEP')){ nav.appendChild(el('div','sep',item[1])); return; }
+    const b=el('button',null,`<span class="ic">${item[1]}</span> ${item[2]}`);
+    b.dataset.view=item[0];
+    b.onclick=()=>go(item[0]);
+    nav.appendChild(b);
+  });
+}
+function go(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+  $('#v-'+v).classList.add('active');
+  $('#sb').classList.remove('open');
+  window.scrollTo(0,0);
+  render(v);
+}
+
+/* ============================================================
+   RENDER — cada view
+   ============================================================ */
+function render(v){
+  if(v==='painel') renderPainel();
+  if(v==='plano') renderPlano();
+  if(v==='modulos') renderModulos();
+  if(v==='estudio') renderEstudio();
+  if(v==='biblioteca') renderBiblioteca();
+  if(v==='templates') renderTemplates();
+  if(v==='avaliacoes') renderAval();
+  if(v==='diario') renderDiario();
+  if(v==='registros') renderRegistros();
+  if(v==='lembretes') renderLembretes();
+  if(v==='config') renderConfig();
+}
+
+function renderPainel(){
+  const doneCount=Object.values(S.done).filter(Boolean).length;
+  const pct=Math.round(doneCount/12*100);
+  const recs=S.records.length, entries=S.diary.length, avals=S.assess.length;
+  // streak: dias distintos com diário nos últimos dias consecutivos
+  const days=[...new Set(S.diary.map(d=>d.date))].sort().reverse();
+  let streak=0; let cur=new Date(today());
+  for(const d of days){ const dd=new Date(d); const diff=Math.round((cur-dd)/864e5); if(diff===streak){streak++; } else break; }
+  $('#v-painel').innerHTML=`
+    <div class="eyebrow">Painel</div>
+    <h1>Bem-vindo ao seu estúdio</h1>
+    <p class="lead">Um lugar para praticar voz, presença e mensagem — e ver a evolução, take a take.</p>
+    <div class="grid g4" style="margin:22px 0">
+      <div class="stat"><div class="n">S${S.week}</div><div class="l">Semana atual</div></div>
+      <div class="stat"><div class="n">${pct}%</div><div class="l">Trilha concluída</div><div class="bar"><span style="width:${pct}%"></span></div></div>
+      <div class="stat"><div class="n">${streak}</div><div class="l">Dias seguidos de prática</div></div>
+      <div class="stat"><div class="n">${recs}</div><div class="l">Gravações registradas</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>Treino de hoje</h3>
+        <p class="muted small">Rotina rápida da fundação vocal — 15 minutos.</p>
+        <div class="row">
+          <button class="btn amber" onclick="go('estudio')">Abrir estúdio</button>
+          <button class="btn ghost" onclick="go('biblioteca')">Ver exercícios</button>
+        </div>
+        <ul class="small" style="margin-top:12px">
+          <li>Respiração diafragmática — 5 min</li>
+          <li>Dicção com trava-línguas — 5 min</li>
+          <li>Leitura gravada + caça-vícios — 5 min</li>
+        </ul>
+      </div>
+      <div class="card"><h3>Continuar de onde parou</h3>
+        <p class="small muted">Diário: ${entries} registros · Avaliações: ${avals}</p>
+        <div class="row">
+          <button class="btn ghost" onclick="go('modulos')">Módulo 1</button>
+          <button class="btn ghost" onclick="go('diario')">Diário de bordo</button>
+          <button class="btn ghost" onclick="go('avaliacoes')">Rubricas</button>
+        </div>
+      </div>
+    </div>
+    <div class="notice">Primeira vez? Comece pelo <b>diagnóstico</b>: vá em <b>Avaliações & rubricas</b> e preencha a rubrica "Diagnóstico inicial" depois de gravar sua fala de 2 min no <b>Estúdio</b>. É sua linha de base.</div>
+  `;
+}
+
+function renderPlano(){
+  let rows=PLANO.map(r=>{
+    const done=!!S.done[r[0]];
+    return `<tr>
+      <td><input type="checkbox" ${done?'checked':''} onchange="toggleWeek(${r[0]},this.checked)"> <b>S${r[0]}</b></td>
+      <td>${r[1]}</td><td>${r[2]}</td><td>${r[4]}</td><td>${r[5]}</td><td class="mono small">${r[6]}</td>
+    </tr>`;
+  }).join('');
+  $('#v-plano').innerHTML=`
+    <div class="eyebrow">Plano</div><h1>Trilha de 12 semanas</h1>
+    <p class="lead">Do instrumento (voz e corpo) ao uso complexo (apresentações e escrita). Marque cada semana ao concluir.</p>
+    <div class="card" style="overflow-x:auto"><table>
+      <tr><th>Semana</th><th>Módulo</th><th>Conteúdos</th><th>Atividades</th><th>Entregável</th><th>Tempo</th></tr>
+      ${rows}
+    </table></div>
+    <div class="row">
+      <label style="margin:0">Semana atual:</label>
+      <select style="width:120px" onchange="S.week=+this.value;save();renderPainel()">
+        ${PLANO.map(r=>`<option ${S.week===r[0]?'selected':''}>${r[0]}</option>`).join('')}
+      </select>
+    </div>`;
+}
+function toggleWeek(w,c){ S.done[w]=c; save(); }
+
+function renderModulos(){
+  const cards=Object.entries(MODULOS).map(([id,m])=>{
+    const lv=`<span class="tag lvl${m.lvl}">Nível ${m.lvl}</span>`;
+    if(m.ready) return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${m.n}</h3>${lv}</div>
+      <p class="small muted" style="margin:.6em 0">Conteúdo completo disponível.</p>
+      <button class="btn amber sm" onclick="openM1()">Abrir módulo</button></div>`;
+    return `<div class="card" style="opacity:.92"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${m.n}</h3>${lv}</div>
+      <p class="small muted" style="margin:.6em 0"><span class="pill">esqueleto</span> conteúdo em produção. Tópicos previstos:</p>
+      <div class="chips">${m.out.map(o=>`<span class="chip">${o}</span>`).join('')}</div></div>`;
+  }).join('');
+  $('#v-modulos').innerHTML=`<div class="eyebrow">Módulos</div><h1>Conteúdo por módulo</h1>
+    <p class="lead">O Módulo 1 está completo. Os demais entram com a mesma profundidade conforme a produção avança.</p>
+    <div id="m1panel"></div>${cards}`;
+}
+function openM1(){ $('#m1panel').innerHTML=`<div class="card">${M1}<div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="$('#m1panel').innerHTML='';window.scrollTo(0,0)">Fechar módulo</button></div></div>`; window.scrollTo(0,0); }
+
+/* ---------- Biblioteca ---------- */
+let bibSkill='todos', bibLvl='todos';
+function renderBiblioteca(){
+  const skills=['todos','Voz','Corpo'], lvls=['todos','1','2','3'];
+  const list=EXS.filter(e=>(bibSkill==='todos'||e.skill===bibSkill)&&(bibLvl==='todos'||e.lvl==(bibLvl))).map(e=>`
+    <details class="acc"><summary>${e.id} · ${e.t} <span class="tag lvl${e.lvl}">N${e.lvl}</span></summary>
+     <div class="body">
+       <p class="small muted">${e.skill} · ${e.dur} · ${e.freq}</p>
+       <p><b>Objetivo:</b> ${e.obj}</p>
+       <p><b>Passo a passo:</b></p><ol>${e.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+       <p><b>Avaliação:</b> ${e.aval}<br><b>Progressão:</b> ${e.prog}</p>
+       <button class="btn amber sm" onclick="go('estudio')">Praticar no estúdio</button>
+     </div></details>`).join('');
+  $('#v-biblioteca').innerHTML=`<div class="eyebrow">Prática</div><h1>Biblioteca de exercícios</h1>
+    <p class="lead">Filtros por habilidade e nível. (Módulo 1 disponível; mais exercícios entram com os próximos módulos.)</p>
+    <div class="chips">${skills.map(s=>`<span class="chip ${bibSkill===s?'on':''}" onclick="bibSkill='${s}';renderBiblioteca()">${s==='todos'?'Todas habilidades':s}</span>`).join('')}</div>
+    <div class="chips">${lvls.map(l=>`<span class="chip ${bibLvl===l?'on':''}" onclick="bibLvl='${l}';renderBiblioteca()">${l==='todos'?'Todos níveis':'Nível '+l}</span>`).join('')}</div>
+    ${list||'<p class="muted">Nenhum exercício com esse filtro.</p>'}`;
+}
+
+/* ---------- Templates ---------- */
+function renderTemplates(){
+  const cards=TEMPLATES.map(t=>{
+    const fields=t.fields.map(f=>{
+      const tag=f[2]==='textarea'?`<textarea id="tpl-${t.id}-${f[0]}"></textarea>`:`<input type="text" id="tpl-${t.id}-${f[0]}">`;
+      return `<label>${f[1]}</label>${tag}`;
+    }).join('');
+    return `<details class="acc"><summary>${t.t}</summary><div class="body">
+      ${fields}
+      <div class="row" style="margin-top:12px">
+        <button class="btn amber sm" onclick="buildTpl('${t.id}')">Gerar texto</button>
+        <button class="btn ghost sm" onclick="copyTpl('${t.id}')">Copiar</button>
+        <button class="btn ghost sm" onclick="saveTpl('${t.id}')">Salvar</button>
+      </div>
+      <div class="out" id="out-${t.id}">O texto gerado aparece aqui.</div>
+    </div></details>`;
+  }).join('');
+  const saved=S.templates.length?`<div class="card"><h3>Salvos</h3>${S.templates.map((s,i)=>`
+     <details class="acc"><summary>${esc(s.t)} · <span class="small muted">${fmtDate(s.date)}</span></summary>
+     <div class="body"><div class="out">${esc(s.text)}</div>
+     <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="copy(${JSON.stringify(s.text).replace(/"/g,'&quot;')})">Copiar</button>
+     <button class="btn ghost sm" onclick="delTpl(${i})">Excluir</button></div></div></details>`).join('')}</div>`:'';
+  $('#v-templates').innerHTML=`<div class="eyebrow">Prática</div><h1>Templates</h1>
+    <p class="lead">Preencha, gere o texto e copie. Salve o que quiser reaproveitar.</p>
+    ${cards}
+    <div class="card"><h3>Em produção</h3><div class="chips">${TEMPLATE_SOON.map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>
+    ${saved}`;
+}
+function tplVals(id){const t=TEMPLATES.find(x=>x.id===id);const v={};t.fields.forEach(f=>v[f[0]]=(document.getElementById(`tpl-${id}-${f[0]}`).value||'…').trim());return {t,v};}
+function buildTpl(id){const {t,v}=tplVals(id);$('#out-'+id).textContent=t.build(v);}
+function copyTpl(id){const {t,v}=tplVals(id);copy(t.build(v));}
+function saveTpl(id){const {t,v}=tplVals(id);S.templates.unshift({t:t.t,text:t.build(v),date:Date.now()});save();renderTemplates();toast('Template salvo');}
+function delTpl(i){S.templates.splice(i,1);save();renderTemplates();}
+
+/* ---------- Avaliações & rubricas ---------- */
+let curRubric='diag';
+function renderAval(){
+  const r=RUBRICS[curRubric];
+  const rows=r.crit.map((c,i)=>`
+    <div class="rub"><div>${c}</div>
+      <input type="range" min="1" max="5" value="3" id="rb-${i}" oninput="document.getElementById('rv-${i}').textContent=this.value;updAvg()">
+      <div class="v" id="rv-${i}">3</div></div>`).join('');
+  const hist=S.assess.filter(a=>a.key===curRubric).map(a=>`<tr><td>${fmtDate(a.date)}</td><td class="mono">${a.avg}</td><td class="small muted">${esc(a.note||'')}</td><td><button class="btn ghost sm" onclick="delAssess(${a.id})">×</button></td></tr>`).join('');
+  $('#v-avaliacoes').innerHTML=`<div class="eyebrow">Acompanhamento</div><h1>Avaliações & rubricas</h1>
+    <p class="lead">Escala 1 (muito abaixo) a 5 (excelente). Avalie sua gravação logo depois de assistir. Confie na câmera, não na memória.</p>
+    <div class="chips">${Object.entries(RUBRICS).map(([k,rr])=>`<span class="chip ${curRubric===k?'on':''}" onclick="curRubric='${k}';renderAval()">${rr.name}</span>`).join('')}</div>
+    <div class="card"><h3>${r.name}</h3>${rows}
+      <div class="row" style="margin-top:14px;justify-content:space-between">
+        <div>Média: <b class="mono" id="avg" style="font-size:1.2rem">3.0</b></div>
+      </div>
+      <label>Nota rápida (opcional)</label><input type="text" id="ass-note" placeholder="Ex.: melhorei as pausas, ainda corro no final">
+      <div class="row" style="margin-top:10px"><button class="btn amber" onclick="saveAssess()">Salvar avaliação</button></div>
+    </div>
+    ${hist?`<div class="card"><h3>Histórico — ${r.name}</h3><table><tr><th>Data</th><th>Média</th><th>Nota</th><th></th></tr>${hist}</table></div>`:'<p class="muted small">Sem avaliações desta rubrica ainda.</p>'}`;
+  updAvg();
+}
+function updAvg(){const r=RUBRICS[curRubric];let s=0;r.crit.forEach((c,i)=>s+=+document.getElementById('rb-'+i).value);const avg=(s/r.crit.length).toFixed(1);const e=$('#avg');if(e)e.textContent=avg;}
+function saveAssess(){const r=RUBRICS[curRubric];let s=0;const scores=r.crit.map((c,i)=>{const val=+document.getElementById('rb-'+i).value;s+=val;return val;});
+  S.assess.unshift({id:Date.now(),key:curRubric,avg:(s/r.crit.length).toFixed(1),scores,note:$('#ass-note').value,date:Date.now()});
+  save();renderAval();toast('Avaliação salva');}
+function delAssess(id){S.assess=S.assess.filter(a=>a.id!==id);save();renderAval();}
+
+/* ---------- Diário ---------- */
+function renderDiario(){
+  const list=S.diary.map(d=>`<div class="card" style="padding:14px 18px">
+    <div class="row" style="justify-content:space-between"><b class="small mono">${d.date}</b><button class="btn ghost sm" onclick="delDiary(${d.id})">excluir</button></div>
+    ${d.practiced?`<p class="small"><span class="tag">${esc(d.practiced)}</span></p>`:''}
+    <p style="margin:.4em 0 0">${esc(d.text)}</p></div>`).join('');
+  $('#v-diario').innerHTML=`<div class="eyebrow">Acompanhamento</div><h1>Diário de bordo</h1>
+    <p class="lead">Uma linha por dia: o que praticou, o que melhorou, o que travou. Alimenta seu plano de desenvolvimento.</p>
+    <div class="card">
+      <label>O que você praticou hoje?</label><input type="text" id="d-prac" placeholder="Ex.: E1 respiração, E5 caça-vícios">
+      <label>Observação</label><textarea id="d-text" placeholder="Consegui pausar em vez de 'éee' em 2 de 3 conversas."></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn amber" onclick="addDiary()">Registrar dia</button></div>
+    </div>${list}`;
+}
+function addDiary(){const t=$('#d-text').value.trim();if(!t){toast('Escreva uma observação');return;}
+  S.diary.unshift({id:Date.now(),date:today(),practiced:$('#d-prac').value.trim(),text:t});save();renderDiario();toast('Dia registrado');}
+function delDiary(id){S.diary=S.diary.filter(d=>d.id!==id);save();renderDiario();}
+
+/* ---------- Registros ---------- */
+function renderRegistros(){
+  const list=S.records.map(r=>`<div class="card">
+    <div class="row" style="justify-content:space-between"><b>${esc(r.title)}</b><span class="small mono muted">${fmtDate(r.date)} · ${r.kind}</span></div>
+    ${r.note?`<p class="small">${esc(r.note)}</p>`:''}
+    <label>Link no Drive (cole aqui após enviar/subir)</label>
+    <input type="text" value="${esc(r.link||'')}" placeholder="https://drive.google.com/..." onchange="setRecLink(${r.id},this.value)">
+    <div class="row" style="margin-top:8px">${r.link?`<a class="btn ghost sm" href="${esc(r.link)}" target="_blank" rel="noopener">Abrir no Drive</a>`:''}<button class="btn ghost sm" onclick="delRec(${r.id})">Excluir</button></div>
+  </div>`).join('');
+  $('#v-registros').innerHTML=`<div class="eyebrow">Acompanhamento</div><h1>Meus registros</h1>
+    <p class="lead">Fichas das suas gravações. O vídeo em si fica no seu dispositivo/Drive; aqui ficam as notas e o link.</p>
+    <div class="card"><h4>Adicionar registro manual</h4>
+      <label>Título</label><input type="text" id="r-title" placeholder="Ex.: Vídeo diagnóstico — quem sou eu">
+      <label>Tipo</label><select id="r-kind"><option>vídeo</option><option>áudio</option></select>
+      <label>Nota</label><textarea id="r-note"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn amber" onclick="addRec()">Adicionar</button></div>
+    </div>
+    ${list||'<p class="muted small">Nenhum registro ainda. Grave algo no Estúdio ou adicione manualmente.</p>'}`;
+}
+function addRec(){const t=$('#r-title').value.trim();if(!t){toast('Dê um título');return;}
+  S.records.unshift({id:Date.now(),title:t,kind:$('#r-kind').value,note:$('#r-note').value.trim(),date:Date.now(),link:''});save();renderRegistros();}
+function setRecLink(id,v){const r=S.records.find(x=>x.id===id);if(r){r.link=v.trim();save();}}
+function delRec(id){S.records=S.records.filter(r=>r.id!==id);save();renderRegistros();}
+
+/* ============================================================
+   ESTÚDIO DE PRÁTICA — recorder + ferramentas
+   ============================================================ */
+let mediaStream=null, mediaRec=null, chunks=[], recBlob=null, recURL=null, audioCtx=null, analyser=null, rafId=null, recTimer=null, recSecs=0, recKind='audio';
+
+function renderEstudio(){
+  $('#v-estudio').innerHTML=`
+   <div class="eyebrow">Prática</div><h1>Estúdio de prática</h1>
+   <p class="lead">Grave, meça e treine. A gravação funciona plenamente ao abrir este arquivo no seu navegador; dentro do preview, o navegador pode bloquear câmera/microfone.</p>
+
+   <div class="studio">
+     <div class="row" style="justify-content:space-between">
+       <h3 style="margin:0">Gravação</h3>
+       <div class="row">
+         <span class="chip on" id="k-audio" onclick="setKind('audio')" style="cursor:pointer">Áudio</span>
+         <span class="chip" id="k-video" onclick="setKind('video')" style="cursor:pointer;background:#fff;color:var(--muted)">Vídeo</span>
+       </div>
+     </div>
+     <div class="meter" id="meter">${Array.from({length:32}).map(()=>'<div class="b"></div>').join('')}</div>
+     <div class="row" style="justify-content:space-between">
+       <div class="rec-time" id="rectime">00:00</div>
+       <div class="row">
+         <button class="btn rec" id="btn-rec" onclick="startRec()">● Gravar</button>
+         <button class="btn amber" id="btn-stop" onclick="stopRec()" disabled>■ Parar</button>
+       </div>
+     </div>
+     <div id="preview"></div>
+     <div id="postrec" style="display:none">
+       <label style="color:#dfe" >Título do registro</label>
+       <input type="text" id="rec-title" placeholder="Ex.: Leitura E3 — semana 1">
+       <label style="color:#dfe">Nota rápida</label>
+       <input type="text" id="rec-note" placeholder="O que observou?">
+       <div class="row" style="margin-top:10px">
+         <button class="btn amber sm" onclick="downloadRec()">Baixar arquivo</button>
+         <button class="btn sm" id="btn-drive" onclick="uploadRec()">Enviar ao Drive</button>
+         <button class="btn ghost sm" style="color:#dfe;border-color:#456" onclick="logRec()">Salvar registro (sem arquivo)</button>
+       </div>
+       <p class="small" style="color:#9fb3a6;margin-top:8px">O vídeo/áudio não é guardado dentro do app (arquivos são grandes). Baixe ou envie ao Drive; a ficha fica em "Meus registros".</p>
+     </div>
+   </div>
+
+   <div class="grid g2" style="margin-top:18px">
+     <div class="card"><h3>Respiração guiada (E1)</h3>
+       <div class="breath" id="breath">pronto</div>
+       <div class="row" style="justify-content:center"><button class="btn amber sm" id="breath-btn" onclick="toggleBreath()">Iniciar ciclo</button></div>
+       <p class="small muted" style="text-align:center;margin-top:8px">Inspira 4 · segura 2 · expira 6</p>
+     </div>
+     <div class="card"><h3>Treinador de ritmo</h3>
+       <p class="small muted">Pulso visual/sonoro para manter o ritmo e treinar pausas.</p>
+       <label>Batidas por minuto: <span class="mono" id="bpmv">90</span></label>
+       <input type="range" min="50" max="160" value="90" id="bpm" oninput="$('#bpmv').textContent=this.value; if(metro) startMetro()">
+       <div class="row"><button class="btn amber sm" id="metro-btn" onclick="toggleMetro()">Iniciar</button>
+       <span class="breath" id="pulse" style="width:34px;height:34px;margin:0 0 0 8px;font-size:0"></span></div>
+     </div>
+     <div class="card"><h3>Palavras por minuto</h3>
+       <p class="small muted">Fale por um tempo, conte as palavras e calcule.</p>
+       <label>Segundos falados</label><input type="number" id="wpm-s" value="60">
+       <label>Nº de palavras</label><input type="number" id="wpm-w" placeholder="ex.: 145">
+       <div class="row" style="margin-top:10px"><button class="btn amber sm" onclick="calcWPM()">Calcular</button></div>
+       <div class="out" id="wpm-out">Resultado aparece aqui.</div>
+     </div>
+     <div class="card"><h3>Caça-vícios (E5)</h3>
+       <p class="small muted">Toque a cada "né / tipo / éee". O timer roda junto.</p>
+       <div class="row" style="justify-content:space-between;align-items:baseline">
+         <div class="rec-time" style="color:var(--ink)" id="fillt">00:00</div>
+         <div class="mono" style="font-size:1.6rem" id="fillc">0</div>
+       </div>
+       <div class="row"><button class="btn amber sm" id="fill-btn" onclick="toggleFill()">Iniciar sessão</button>
+       <button class="btn rec sm" onclick="fillTap()">+ vício</button></div>
+       <div class="out" id="fill-out">Vícios por minuto: —</div>
+     </div>
+   </div>`;
+  setKind(recKind);
+}
+
+function setKind(k){recKind=k;
+  const a=$('#k-audio'),v=$('#k-video'); if(!a)return;
+  a.className='chip'+(k==='audio'?' on':''); a.style.background=k==='audio'?'':'#fff'; a.style.color=k==='audio'?'':'var(--muted)';
+  v.className='chip'+(k==='video'?' on':''); v.style.background=k==='video'?'':'#fff'; v.style.color=k==='video'?'':'var(--muted)';
+}
+
+async function startRec(){
+  try{
+    const constraints = recKind==='video'?{audio:true,video:{width:640}}:{audio:true};
+    mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+  }catch(e){
+    toast('Câmera/microfone bloqueados aqui');
+    $('#preview').innerHTML=`<div class="notice warn" style="color:#2a1c05">Não foi possível acessar o microfone/câmera neste ambiente. Salve este arquivo e abra no seu navegador (ou use o gravador nativo do celular) — a ficha do take você registra em "Meus registros".</div>`;
+    return;
+  }
+  chunks=[]; recBlob=null;
+  // preview + waveform
+  if(recKind==='video'){
+    const vid=document.createElement('video'); vid.autoplay=true; vid.muted=true; vid.srcObject=mediaStream;
+    $('#preview').innerHTML=''; $('#preview').appendChild(vid);
+  } else { $('#preview').innerHTML=''; }
+  setupMeter(mediaStream);
+  const mime = MediaRecorder.isTypeSupported('video/webm')?'':'';
+  mediaRec = new MediaRecorder(mediaStream);
+  mediaRec.ondataavailable=e=>{ if(e.data.size)chunks.push(e.data); };
+  mediaRec.onstop=finishRec;
+  mediaRec.start();
+  recSecs=0; $('#rectime').textContent='00:00';
+  recTimer=setInterval(()=>{recSecs++; $('#rectime').innerHTML=`<span class="dot"></span> ${mmss(recSecs)}`;},1000);
+  $('#btn-rec').disabled=true; $('#btn-stop').disabled=false; $('#postrec').style.display='none';
+}
+function stopRec(){ if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop(); }
+function finishRec(){
+  clearInterval(recTimer); stopMeter();
+  $('#btn-rec').disabled=false; $('#btn-stop').disabled=true;
+  const type = recKind==='video'?'video/webm':'audio/webm';
+  recBlob = new Blob(chunks,{type});
+  if(recURL)URL.revokeObjectURL(recURL); recURL=URL.createObjectURL(recBlob);
+  const tag = recKind==='video'?'video':'audio';
+  $('#preview').innerHTML=`<${tag} controls src="${recURL}"></${tag}>`;
+  if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
+  $('#postrec').style.display='block';
+  toast('Gravação pronta');
+}
+function mmss(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+function setupMeter(stream){
+  try{
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const src=audioCtx.createMediaStreamSource(stream);
+    analyser=audioCtx.createAnalyser(); analyser.fftSize=64; src.connect(analyser);
+    const bars=document.querySelectorAll('#meter .b'); const data=new Uint8Array(analyser.frequencyBinCount);
+    $('#meter').classList.add('live');
+    (function draw(){
+      analyser.getByteFrequencyData(data);
+      bars.forEach((b,i)=>{const v=data[i%data.length]/255; b.style.height=Math.max(6,v*100)+'%';});
+      rafId=requestAnimationFrame(draw);
+    })();
+  }catch(e){}
+}
+function stopMeter(){ if(rafId)cancelAnimationFrame(rafId); $('#meter')&&$('#meter').classList.remove('live'); document.querySelectorAll('#meter .b').forEach(b=>b.style.height='6%'); if(audioCtx){audioCtx.close();audioCtx=null;} }
+
+function downloadRec(){ if(!recBlob)return; const a=document.createElement('a'); a.href=recURL; a.download=(($('#rec-title').value||'gravacao')+ (recKind==='video'?'.webm':'.webm')); a.click(); logRec(true); }
+function logRec(silent){
+  const title=$('#rec-title').value.trim()||'Gravação';
+  S.records.unshift({id:Date.now(),title,kind:recKind,note:$('#rec-note').value.trim(),date:Date.now(),link:''});
+  save(); if(!silent)toast('Registro salvo'); 
+}
+
+/* ---------- Drive (credenciais do próprio usuário) ---------- */
+let tokenClient=null, accessToken=null;
+function initDrive(){
+  if(!S.settings.driveClientId){ toast('Configure seu Client ID em Configurações'); go('config'); return; }
+  if(typeof google==='undefined'||!google.accounts){ toast('Google não carregou (rode o arquivo localmente)'); return; }
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id:S.settings.driveClientId,
+    scope:'https://www.googleapis.com/auth/drive.file',
+    callback:(resp)=>{ accessToken=resp.access_token; toast('Drive conectado'); doUpload(); }
+  });
+  tokenClient.requestAccessToken();
+}
+function uploadRec(){ if(!recBlob){toast('Grave algo primeiro');return;} if(accessToken){doUpload();}else{initDrive();} }
+async function doUpload(){
+  if(!recBlob||!accessToken)return;
+  const name=($('#rec-title').value.trim()||'gravacao')+'.webm';
+  const meta={name,mimeType:recBlob.type};
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+  form.append('file',recBlob);
+  toast('Enviando ao Drive…');
+  try{
+    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{
+      method:'POST',headers:{Authorization:'Bearer '+accessToken},body:form});
+    const d=await r.json();
+    if(d.id){ const link=d.webViewLink||('https://drive.google.com/file/d/'+d.id+'/view');
+      S.records.unshift({id:Date.now(),title:$('#rec-title').value.trim()||'Gravação',kind:recKind,note:$('#rec-note').value.trim(),date:Date.now(),link});
+      save(); toast('Enviado ao Drive'); }
+    else { toast('Falha no envio (veja permissões)'); }
+  }catch(e){ toast('Erro de rede/permissão no Drive'); }
+}
+
+/* ---------- Respiração ---------- */
+let breathOn=false, breathT=null;
+function toggleBreath(){ breathOn=!breathOn; $('#breath-btn').textContent=breathOn?'Parar':'Iniciar ciclo'; if(breathOn)breathCycle(); else{clearTimeout(breathT); $('#breath').className='breath'; $('#breath').textContent='pronto';} }
+function breathCycle(){
+  if(!breathOn)return; const b=$('#breath');
+  b.classList.add('big'); b.textContent='inspira';
+  breathT=setTimeout(()=>{ if(!breathOn)return; b.textContent='segura';
+    breathT=setTimeout(()=>{ if(!breathOn)return; b.classList.remove('big'); b.textContent='expira';
+      breathT=setTimeout(breathCycle,6000);
+    },2000);
+  },4000);
+}
+
+/* ---------- Metrônomo ---------- */
+let metro=null;
+function toggleMetro(){ if(metro){clearInterval(metro);metro=null;$('#metro-btn').textContent='Iniciar';$('#pulse').classList.remove('big');} else {startMetro();$('#metro-btn').textContent='Parar';} }
+function startMetro(){ if(metro)clearInterval(metro); const bpm=+$('#bpm').value; const ms=60000/bpm;
+  metro=setInterval(()=>{ const p=$('#pulse'); p.classList.add('big'); setTimeout(()=>p.classList.remove('big'),90);
+    try{ const c=new (window.AudioContext||window.webkitAudioContext)(); const o=c.createOscillator(); const g=c.createGain(); o.frequency.value=880; o.connect(g);g.connect(c.destination); g.gain.value=.05; o.start(); setTimeout(()=>{o.stop();c.close();},50);}catch(e){}
+  },ms); }
+
+/* ---------- WPM ---------- */
+function calcWPM(){ const s=+$('#wpm-s').value,w=+$('#wpm-w').value; if(!s||!w){$('#wpm-out').textContent='Preencha os dois campos.';return;}
+  const wpm=Math.round(w/s*60); let msg;
+  if(wpm<120)msg='Abaixo do confortável — pode soar arrastado. Tente aumentar levemente.';
+  else if(wpm<=160)msg='Faixa confortável (≈130–160). Bom ritmo para compreensão.';
+  else msg='Rápido demais — a compreensão cai. Insira pausas e desacelere.';
+  $('#wpm-out').innerHTML=`<b class="mono" style="font-size:1.3rem">${wpm} palavras/min</b><br><span class="small">${msg}</span>`; }
+
+/* ---------- Caça-vícios ---------- */
+let fillOn=false, fillSecs=0, fillCount=0, fillT=null;
+function toggleFill(){ fillOn=!fillOn; $('#fill-btn').textContent=fillOn?'Encerrar':'Iniciar sessão';
+  if(fillOn){fillSecs=0;fillCount=0;$('#fillc').textContent='0';fillT=setInterval(()=>{fillSecs++;$('#fillt').textContent=mmss(fillSecs);},1000);}
+  else{clearInterval(fillT); const perMin=fillSecs?(fillCount/(fillSecs/60)).toFixed(1):'—'; $('#fill-out').innerHTML=`Vícios por minuto: <b class="mono">${perMin}</b> — meta do módulo: ≤ 1,0`;} }
+function fillTap(){ if(!fillOn){toast('Inicie a sessão');return;} fillCount++; $('#fillc').textContent=fillCount; }
+
+/* ============================================================
+   CONFIGURAÇÕES
+   ============================================================ */
+function renderConfig(){
+  $('#v-config').innerHTML=`<div class="eyebrow">Sistema</div><h1>Configurações</h1>
+   <div class="card"><h3>Backup dos seus dados</h3>
+     <p class="small muted">Progresso, diário, avaliações, registros e templates. Exporte de tempos em tempos — é a sua garantia.</p>
+     <div class="row"><button class="btn amber" onclick="exportData()">Exportar (.json)</button>
+       <label class="btn ghost" style="margin:0">Importar<input type="file" accept="application/json" style="display:none" onchange="importData(this)"></label>
+       <button class="btn ghost" onclick="resetData()">Apagar tudo</button></div>
+   </div>
+
+   <div class="card"><h3>Integração com o Google Drive</h3>
+     <div class="notice warn">Isto só funciona ao <b>abrir este arquivo no seu navegador servido por http(s)</b> (não pelo preview do Claude nem por <span class="mono">file://</span>). Você usa <b>suas próprias credenciais</b> — eu não tenho acesso a elas.</div>
+     <label>Seu Google OAuth <b>Client ID</b></label>
+     <input type="text" id="cfg-client" value="${esc(S.settings.driveClientId)}" placeholder="xxxxx.apps.googleusercontent.com">
+     <div class="row" style="margin-top:10px"><button class="btn amber sm" onclick="saveClient()">Salvar Client ID</button>
+       <button class="btn ghost sm" onclick="initDrive()">Testar conexão</button></div>
+     <details class="acc" style="margin-top:14px"><summary>Como obter o Client ID (passo a passo)</summary><div class="body small">
+       <ol>
+        <li>Acesse o <b>Google Cloud Console</b> e crie um projeto.</li>
+        <li>Em <b>APIs e serviços → Biblioteca</b>, ative a <b>Google Drive API</b>.</li>
+        <li>Em <b>Tela de consentimento OAuth</b>, tipo <b>Externo</b>, e adicione seu e-mail como <b>usuário de teste</b>.</li>
+        <li>Em <b>Credenciais → Criar credenciais → ID do cliente OAuth</b>, tipo <b>Aplicativo da Web</b>.</li>
+        <li>Em <b>Origens JavaScript autorizadas</b>, adicione a origem onde você abrirá o arquivo — ex.: <span class="mono">http://localhost:8000</span>.</li>
+        <li>Sirva o arquivo localmente (ex.: no terminal, na pasta do arquivo: <span class="mono">python -m http.server 8000</span>) e abra <span class="mono">http://localhost:8000/hub-comunicacao.html</span>.</li>
+        <li>Cole o <b>Client ID</b> acima. O escopo pedido é <span class="mono">drive.file</span> — o app só acessa os arquivos que ele mesmo cria.</li>
+       </ol>
+       <p>Alternativa sem configuração: use <b>Baixar arquivo</b> no estúdio e suba o arquivo ao Drive manualmente, ou me mande no chat que eu salvo no seu Drive.</p>
+     </div></details>
+   </div>
+
+   <div class="card"><h3>Sobre</h3><p class="small muted">Estúdio de Comunicação · trilha de 12 semanas. Módulo 1 completo; Módulos 2–6 em produção. Dados salvos localmente neste navegador.</p></div>`;
+}
+function saveClient(){S.settings.driveClientId=$('#cfg-client').value.trim();save();toast('Client ID salvo');}
+function exportData(){const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='estudio-comunicacao-backup.json';a.click();toast('Backup exportado');}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{S=Object.assign(S,JSON.parse(r.result));save();toast('Dados importados');go('painel');}catch(e){toast('Arquivo inválido');}};r.readAsText(f);}
+function resetData(){if(confirm('Apagar todos os seus dados deste app? Faça um backup antes.')){S={week:1,done:{},diary:[],assess:[],records:[],templates:[],settings:{driveClientId:''}};save();go('painel');toast('Tudo apagado');}}
+
+/* ============================================================
+   LEMBRETES / NOTIFICAÇÕES
+   ============================================================ */
+function renderLembretes(){
+  const r=S.reminders;
+  const supported = ('Notification' in window);
+  const perm = supported ? Notification.permission : 'indisponível';
+  const permPill = perm==='granted'?'<span class="pill ok">permissão concedida</span>'
+                 : perm==='denied'?'<span class="pill" style="background:#f0dcd6;color:#8a3b2a">permissão negada</span>'
+                 : `<span class="pill">permissão pendente</span>`;
+  $('#v-lembretes').innerHTML=`
+   <div class="eyebrow">Acompanhamento</div><h1>Lembretes</h1>
+   <p class="lead">Empurrõezinhos para praticar na hora certa: gravação na sua janela de 9h–10h em casa, e escrita ao longo do dia.</p>
+
+   <div class="notice warn"><b>Como isto funciona.</b> A notificação do navegador só dispara com o hub <b>aberto</b> numa aba. Para ser avisado com o app fechado (inclusive no celular), use <b>“Baixar para o calendário”</b> — ele cria eventos recorrentes com alarme no seu Google/Apple Calendar.</div>
+
+   <div class="card">
+     <div class="row" style="justify-content:space-between">
+       <h3 style="margin:0">Notificações no app</h3>${permPill}
+     </div>
+     <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-top:8px">
+       <input type="checkbox" ${r.enabled?'checked':''} onchange="setRem('enabled',this.checked)"> Ativar lembretes enquanto o hub estiver aberto
+     </label>
+     <div class="row" style="margin-top:10px">
+       <button class="btn amber sm" onclick="reqPerm()">Conceder permissão</button>
+       <button class="btn ghost sm" onclick="testNotif()">Testar notificação</button>
+     </div>
+   </div>
+
+   <div class="grid g2">
+     <div class="card"><h3>Gravação (voz e vídeo)</h3>
+       <p class="small muted">Sua janela em casa. O lembrete sugere um exercício do dia e leva ao Estúdio.</p>
+       <label>Horário</label><input type="time" value="${r.recTime}" onchange="setRem('recTime',this.value)">
+       <label>Dias</label>
+       <select onchange="setRem('recDays',this.value)">
+         <option value="all" ${r.recDays==='all'?'selected':''}>Todos os dias</option>
+         <option value="weekdays" ${r.recDays==='weekdays'?'selected':''}>Dias úteis (seg–sex)</option>
+       </select>
+       <p class="small muted" style="margin-top:10px">Janela sugerida: 9h–10h.</p>
+     </div>
+     <div class="card"><h3>Escrita</h3>
+       <p class="small muted">Pode ser a qualquer momento. O lembrete leva aos Templates.</p>
+       <label style="display:flex;align-items:center;gap:8px;font-weight:400">
+         <input type="checkbox" ${r.writeEnabled?'checked':''} onchange="setRem('writeEnabled',this.checked)"> Ativar lembrete de escrita
+       </label>
+       <label>Horário do empurrão</label><input type="time" value="${r.writeTime}" onchange="setRem('writeTime',this.value)">
+       <p class="small muted" style="margin-top:10px">Dica: escolha um horário morto do seu dia (ex.: pós-almoço).</p>
+     </div>
+   </div>
+
+   <div class="card"><h3>Levar para o calendário</h3>
+     <p class="small muted">Gera um arquivo <span class="mono">.ics</span> com dois eventos recorrentes e alarme: gravação (${r.recTime}, ${r.recDays==='weekdays'?'seg–sex':'diário'}) e escrita (${r.writeTime}, diário). Importe no Google Calendar (Configurações → Importar) ou abra no celular.</p>
+     <button class="btn amber" onclick="buildICS()">Baixar para o calendário (.ics)</button>
+   </div>`;
+}
+
+let remLoop=null;
+function startReminderLoop(){ clearInterval(remLoop); remLoop=setInterval(checkReminders,30000); checkReminders(); }
+function toMin(hm){const[a,b]=hm.split(':');return (+a)*60+(+b);}
+function daysOk(mode,day){ return mode==='weekdays' ? (day>=1&&day<=5) : true; }
+function checkReminders(){
+  const r=S.reminders; if(!r.enabled) return;
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  const now=new Date(); const nowMin=now.getHours()*60+now.getMinutes(); const dk=localToday();
+  const rec=toMin(r.recTime);
+  if(daysOk(r.recDays,now.getDay()) && nowMin>=rec && nowMin<rec+60)
+    fireOnce(dk+'|rec','Janela de gravação',recMsg(),'estudio');
+  if(r.writeEnabled && nowMin>=toMin(r.writeTime))
+    fireOnce(dk+'|write','Exercício de escrita',writeMsg(),'templates');
+}
+function fireOnce(key,title,body,view){
+  if(S.reminders.fired[key]) return;
+  S.reminders.fired[key]=true; save();
+  try{ const n=new Notification(title,{body}); n.onclick=()=>{window.focus();go(view);n.close();}; }catch(e){ toast(title+': '+body); }
+}
+function recMsg(){
+  const list=EXS.filter(e=>['E1','E3','E4','E5','E6','S1','S2'].includes(e.id));
+  const e=list[new Date().getDate()%list.length];
+  return `Sugestão de hoje: ${e.id} — ${e.t}. Abra o Estúdio e grave.`;
+}
+function writeMsg(){
+  const o=['Reescreva um e-mail confuso usando o template E-mail executivo.',
+           'Pratique uma resposta no formato PREP.',
+           'Transforme um dado do seu trabalho em 3 linhas de narrativa.',
+           'Escreva um resumo executivo de uma decisão recente.'];
+  return o[new Date().getDate()%o.length];
+}
+function reqPerm(){
+  if(!('Notification' in window)){toast('Este navegador não suporta notificações');return;}
+  Notification.requestPermission().then(p=>{ renderLembretes(); if(p==='granted'){toast('Notificações ativadas');startReminderLoop();} else toast('Permissão não concedida'); });
+}
+function setRem(k,v){ S.reminders[k]=v; save(); renderLembretes(); if(k==='enabled'&&v&&('Notification'in window)&&Notification.permission!=='granted')reqPerm(); startReminderLoop(); }
+function testNotif(){ if(('Notification'in window)&&Notification.permission==='granted'){ const n=new Notification('Estúdio de Comunicação',{body:'Exemplo de lembrete — bora praticar voz e presença.'}); n.onclick=()=>{window.focus();go('estudio');n.close();}; } else { toast('Conceda a permissão primeiro'); } }
+
+/* ---- Calendário .ics ---- */
+function icsStamp(){const d=new Date();return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+'Z';}
+function nextDT(hm){const[h,m]=hm.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d<new Date())d.setDate(d.getDate()+1);return d;}
+function fmtLocal(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';}
+function ev(uid,summary,desc,st,en,rrule,alarm){
+  return ['BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+icsStamp(),'DTSTART:'+fmtLocal(st),'DTEND:'+fmtLocal(en),
+    'SUMMARY:'+summary,'DESCRIPTION:'+desc,rrule,
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+alarm,'TRIGGER:-PT0M','END:VALARM','END:VEVENT'].join('\r\n');
+}
+function buildICS(){
+  const r=S.reminders;
+  const recRule = r.recDays==='weekdays'?'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR':'RRULE:FREQ=DAILY';
+  const rs=nextDT(r.recTime), re=new Date(rs.getTime()+60*60000);
+  const cal=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Estudio Comunicacao//PT-BR//EN','CALSCALE:GREGORIAN'];
+  cal.push(ev('rec-'+Date.now()+'@estudio','Gravar: voz e presença','Janela de gravação 9h as 10h. Abra o hub e grave um exercício de voz ou presença.',rs,re,recRule,'Hora de gravar seu exercício'));
+  if(r.writeEnabled){ const ws=nextDT(r.writeTime), we=new Date(ws.getTime()+15*60000);
+    cal.push(ev('wr-'+Date.now()+'@estudio','Escrita: exercício de comunicação','Exercício de escrita. Reescreva um e-mail (PREP / e-mail executivo) ou transforme um dado em narrativa.',ws,we,'RRULE:FREQ=DAILY','Exercício de escrita do dia')); }
+  cal.push('END:VCALENDAR');
+  const blob=new Blob([cal.join('\r\n')],{type:'text/calendar'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lembretes-comunicacao.ics'; a.click();
+  toast('Arquivo de calendário baixado');
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(async function(){
+  await load();
+  if(!S.reminders) S.reminders={enabled:false,recTime:'09:00',recDays:'all',writeEnabled:true,writeTime:'14:00',fired:{}};
+  if(!S.reminders.fired) S.reminders.fired={};
+  const t=localToday(); Object.keys(S.reminders.fired).forEach(k=>{ if(!k.startsWith(t)) delete S.reminders.fired[k]; });
+  buildNav(); go('painel'); startReminderLoop();
+})();
+</script>
+</body>
+</html>
